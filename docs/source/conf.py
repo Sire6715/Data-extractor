@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'project-template'
+project = 'csv-to-JSON-data-extractor'
 copyright = '2026, Prince'
 author = 'Prince'
 release = '2026'
@@ -18,7 +18,6 @@ extensions = []
 
 templates_path = ['_templates']
 exclude_patterns = []
-
 
 
 # -- Options for HTML output -------------------------------------------------

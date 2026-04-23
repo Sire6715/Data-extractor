@@ -2,11 +2,11 @@
 requires = ["setuptools", "wheel"]
 
 [project]
-name = "my-project"
+name = "Data-Extractor"
 version = "1.0.0"
 authors = [{ name = "Uche", email = "uchepibe@gmail.com" }]
 
-description = "Real-World Python Projects -- Project 0."
+description = "Data Extractor for csv files"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []

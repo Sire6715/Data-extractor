@@ -1,7 +1,14 @@
 from abc import ABC, abstractmethod
-from model import RawData, XYPair
+from src.model import RawData, XYPair
 import csv
+import logging
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s: %(message)s"
+)
+
+logger = logging.getLogger(__name__)
 
 class PairBuilder(ABC):
     """Abstract base class for building XYPair objects from CSV rows."""
@@ -9,7 +16,7 @@ class PairBuilder(ABC):
     target_class: type[RawData]
     
     @abstractmethod
-    def from_row(row: list[str]) -> RawData:
+    def from_row(self, row: list[str]) -> RawData:
         """Build an XYPair from a CSV row."""
         pass
 
@@ -27,12 +34,12 @@ class Series1Pair(PairBuilder):
             y = row.get("y1")
 
             if x is None or y is None:
-                print("Warning: missing value in row {row}")
+                logger.warning(f"Missing value in row {row}")
 
             return cls(x=x or "", y=y or "")
 
         except Exception as e:
-            print(f"Warning: Failed to process row {row}: {e}")
+            logger.warning(f"Failed to process row {row}: {e}")
             return cls(x="", y="")
 
 
@@ -49,12 +56,12 @@ class Series2Pair(PairBuilder):
             y = row.get("y2")
 
             if x is None or y is None:
-                print("Warning: missing value in row {row}")
+                logger.warning(f"Missing value in row {row}")
 
             return cls(x=x or "", y=y or "")
 
         except Exception as e:
-            print(f"Warning: Failed to process row {row}: {e}")
+            logger.warning(f"Failed to process row {row}: {e}")
             return cls(x="", y="")
 
 
@@ -71,12 +78,12 @@ class Series3Pair(PairBuilder):
             y = row.get("y3")
 
             if x is None or y is None:
-                print("Warning: missing value in row {row}")
+                logger.warning(f"Missing value in row {row}")
 
             return cls(x=x or "", y=y or "")
 
         except Exception as e:
-            print(f"Warning: Failed to process row {row}: {e}")
+            logger.warning(f"Failed to process row {row}: {e}")
             return cls(x="", y="")
 
 
@@ -93,12 +100,12 @@ class Series4Pair(PairBuilder):
             y = row.get("y4")
 
             if x is None or y is None:
-                print(f"Warning: Missing value in row {row}")
+                logger.warning(f"Missing value in row {row}")
 
             return cls(x=x or "", y=y or "")
 
         except Exception as e:
-            print(f"Warning: Failed to process row {row}: {e}")
+            logger.warning(f"Failed to process row {row}: {e}")
             return cls(x="", y="")
 
 
@@ -125,12 +132,16 @@ class Extract:
                     rows = list(reader)
 
             if not rows:
-                raise ValueError(f"Source file is empty: {self.file_path}")
+                msg = "Source file is empty: {self.file_path}"
+                logger.debug(msg, exc_info=True)
+                raise ValueError(msg)
 
         except FileNotFoundError:
             msg = f"Cannot read file:{self.file_path}. Check file Permissions."
+            logger.debug(msg, exc_info=True)
             raise ValueError(msg)
         except Exception as e:
+            logger.debug("Failed to read CSV: {e}")
             raise RuntimeError("Failed to read CSV: {e}") from e
 
         return rows
@@ -142,14 +153,18 @@ class Extract:
         missing = excepted - set(headers)
 
         if missing:
-            raise ValueError(f"Missing expected columns: {missing}. Found: {list(headers)}")
+            msg = f"Missing expected columns: {missing}. Found: {list(headers)}"
+            logger.debug(msg)
+            raise ValueError(msg)
 
     def build_pairs(self) -> list[RawData]:
         """Build and return a list of XYPair objects from the CSV file."""
         rows = self._read_csv()
 
         if not rows:
-            raise ValueError("No data found in CSV")
+            msg = "No data found in CSV"
+            logger.debug(msg)
+            raise ValueError(msg)
 
         self._validate_headers(rows[0].keys())
         pairs = []
@@ -159,6 +174,6 @@ class Extract:
                 pair = self.builder.from_row(row)
                 pairs.append(pair)
             except Exception as e:
-                print(f"Skipping row {i} due to error {e}")
+                logger.warning(f"Skipping row {i} due to error {e}")
 
         return pairs

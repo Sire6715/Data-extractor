@@ -1,7 +1,4 @@
 # Data-Extractor
-
-![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![Tests](https://img.shields.io/badge/tests-pytest%20%7C%20behave-green) ![Docs](https://img.shields.io/badge/docs-sphinx-orange) ![License](https://img.shields.io/badge/license-MIT-lightgrey)
-
 ## Overview
 
 Data-Extractor is a Python CLI tool that reads Anscombe's Quartet from a tab-separated CSV file and writes four Newline-Delimited JSON (NDJSON) files — one per data series.
@@ -164,7 +161,7 @@ pytest && behave tests/features/
 `acquire.py` uses Python's `logging` module throughout — there are no `print()` calls. The logger name is `data_extractor`. To see log output when running manually:
 
 ```bash
-python -m src.acquire --csv-path data/Anscombe_quartet_data.csv -o output/quartet 2>&1
+python -m src.acquire data/Anscombe_quartet_data.csv -o output/quartet
 ```
 
 To control log level in your own scripts:

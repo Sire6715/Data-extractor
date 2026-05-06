@@ -78,7 +78,7 @@ Data-extractor/
 Run the tool via the module entry point:
 
 ```bash
-python -m src.acquire --csv-path data/Anscombe_quartet_data.csv -o output/quartet
+python -m src.acquire data/Anscombe_quartet_data.csv -o output/quartet
 ```
 
 ### CLI Arguments

@@ -16,7 +16,7 @@ class PairBuilder(ABC):
     target_class: type[RawData]
     
     @abstractmethod
-    def from_row(self, row: list[str]) -> RawData:
+    def from_row(self, row: dict[str, str]) -> RawData:
         """Build an XYPair from a CSV row."""
         pass
 
@@ -166,7 +166,7 @@ class Extract:
             logger.debug(msg)
             raise ValueError(msg)
 
-        self._validate_headers(rows[0].keys())
+        self._validate_headers(list(rows[0].keys()))
         pairs = []
 
         for i, row in enumerate(rows):

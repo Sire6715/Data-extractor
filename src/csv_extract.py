@@ -17,7 +17,14 @@ class PairBuilder(ABC):
     
     @abstractmethod
     def from_row(self, row: dict[str, str]) -> RawData:
-        """Build an XYPair from a CSV row."""
+        """Build an XYPair from a CSV row.
+        
+        Args:
+            row: Dictionary mapping CSV column names to string values.
+        
+        Returns:
+            RawData: Built object (typically XYPair) from the row data.
+        """
         pass
 
 
@@ -26,7 +33,14 @@ class Series1Pair(PairBuilder):
     target_class = XYPair
 
     def from_row(self, row: dict[str, str]) -> RawData:
-        """Extract x123 and y1 from row to create an XYPair."""
+        """Extract x123 and y1 from row to create an XYPair.
+        
+        Args:
+            row: Dictionary containing CSV row data with 'x123' and 'y1' keys.
+        
+        Returns:
+            RawData: XYPair object with x and y values (empty strings if missing/invalid).
+        """
         
         cls = self.target_class
         try:
@@ -48,7 +62,14 @@ class Series2Pair(PairBuilder):
     target_class = XYPair
     
     def from_row(self, row: dict[str, str]) -> XYPair:
-        """Extract x123 and y2 from row to create an XYPair."""
+        """Extract x123 and y2 from row to create an XYPair.
+        
+        Args:
+            row: Dictionary containing CSV row data with 'x123' and 'y2' keys.
+        
+        Returns:
+            XYPair: Object with x and y values (empty strings if missing/invalid).
+        """
         
         cls = self.target_class
         try:
@@ -70,7 +91,14 @@ class Series3Pair(PairBuilder):
     target_class = XYPair
     
     def from_row(self, row: dict[str, str]) -> XYPair:
-        """Extract x123 and y3 from row to create an XYPair."""
+        """Extract x123 and y3 from row to create an XYPair.
+        
+        Args:
+            row: Dictionary containing CSV row data with 'x123' and 'y3' keys.
+        
+        Returns:
+            XYPair: Object with x and y values (empty strings if missing/invalid).
+        """
         
         cls = self.target_class
         try:
@@ -92,7 +120,14 @@ class Series4Pair(PairBuilder):
     target_class = XYPair
     
     def from_row(self, row: dict[str, str]) -> XYPair:
-        """Extract x4 and y4 from row to create an XYPair."""
+        """Extract x4 and y4 from row to create an XYPair.
+        
+        Args:
+            row: Dictionary containing CSV row data with 'x4' and 'y4' keys.
+        
+        Returns:
+            XYPair: Object with x and y values (empty strings if missing/invalid).
+        """
         
         cls = self.target_class
         try:
@@ -113,12 +148,28 @@ class Extract:
     """Extracts and builds XYPair objects from CSV files using a specified builder."""
 
     def __init__(self, builder: PairBuilder, file_path: str):
-        """Initialize Extract with a PairBuilder and CSV file path."""
+        """Initialize Extract with a PairBuilder and CSV file path.
+        
+        Args:
+            builder: PairBuilder instance used to create objects from CSV rows.
+            file_path: Path to the CSV file to process.
+        
+        Returns:
+            None
+        """
         self.builder = builder
         self.file_path = file_path
 
     def _read_csv(self) -> list[dict]:
-        """Read CSV file and return list of dictionaries."""
+        """Read CSV file and return list of dictionaries.
+        
+        Returns:
+            list[dict]: List of rows as dictionaries with column headers as keys.
+        
+        Raises:
+            ValueError: If file is empty or cannot be read.
+            RuntimeError: If CSV reading fails unexpectedly.
+        """
         try:
             encoding = "utf-8"
             try:
@@ -147,10 +198,20 @@ class Extract:
         return rows
 
     def _validate_headers(self, headers: list[str]):
-        """Validate that all expected CSV columns are present."""
-        excepted = {"x123", "y1", "y2", "y3", "x4", "y4"}
+        """Validate that all expected CSV columns are present.
+        
+        Args:
+            headers: List of column names found in CSV file.
+        
+        Returns:
+            None
+        
+        Raises:
+            ValueError: If any expected columns ('x123', 'y1', 'y2', 'y3', 'x4', 'y4') are missing.
+        """
+        expected = {"x123", "y1", "y2", "y3", "x4", "y4"}
 
-        missing = excepted - set(headers)
+        missing = expected - set(headers)
 
         if missing:
             msg = f"Missing expected columns: {missing}. Found: {list(headers)}"
@@ -158,7 +219,14 @@ class Extract:
             raise ValueError(msg)
 
     def build_pairs(self) -> list[RawData]:
-        """Build and return a list of XYPair objects from the CSV file."""
+        """Build and return a list of XYPair objects from the CSV file.
+        
+        Returns:
+            list[RawData]: List of built objects from each valid CSV row.
+        
+        Raises:
+            ValueError: If CSV has no data rows.
+        """
         rows = self._read_csv()
 
         if not rows:

@@ -1,0 +1,62 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "CLI: Local CSV",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.acquire",
+            "args": [
+                "-o",
+                "./output",
+                "data/Anscombe_quartet_data.csv"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "CLI: Local ZIP",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.acquire",
+            "args": [
+                "-o",
+                "./output",
+                "data/Anscombe_quartet_data.zip"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "CLI: Kaggle Download",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.acquire",
+            "args": [
+                "-o",
+                "./output",
+                "--zip",
+                "carlmcbrideellis/data-anscombes-quartet",
+                "-k",
+                "C:/Users/hp/Downloads/kaggle.json",
+                "data.csv"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "CLI: Kaggle Search",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "src.acquire",
+            "args": [
+                "-o",
+                "./output",
+                "--search",
+                "anscombe",
+                "Iris",
+                "-k",
+                "C:/Users/hp/Downloads/kaggle.json",
+                "data.csv"
+            ],
+            "console": "integratedTerminal"
+        }
+    ]
+}

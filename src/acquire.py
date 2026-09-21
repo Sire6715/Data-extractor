@@ -10,6 +10,7 @@ import shutil
 from src.kaggleclient import RestAccess
 from src.zipfile import ZipFile
 
+
 from src.csv_extract import (
     Extract,
     Series1Pair,
@@ -34,6 +35,8 @@ class LocalExtractCommand(Command):
 
     def execute(self):
         csv_path = Path(self.args.csv_file)
+        output_dir = Path(self.args.output)
+        Main._validate_paths(csv_path, output_dir)
         return csv_path, Main._extract_series(self.args, csv_path)
 
 class ZipExtractCommand(Command):
@@ -41,6 +44,8 @@ class ZipExtractCommand(Command):
         self.args = args
 
     def execute(self):
+        output_dir = Path(self.args.output)
+        Main._validate_paths(None, output_dir)
         csv_path = Main._handle_zip(self.args)
         return csv_path, Main._extract_series(self.args, csv_path)
 
@@ -195,16 +200,16 @@ class Main():
             logger.error(f"Output path is not a directory: {output_dir}")
             sys.exit(1)
             
-
-        if not csv_path.is_file():
+        if csv_path is not None and not csv_path.is_file():
             logger.error(f"CSV path is not a file: {csv_path}")
             sys.exit(1)
 
+        
     @staticmethod
     def __check_existing_files(output_dir: Path, force: bool) -> bool:
         """
-        Check for existing output files and handle overwrite confirmation.
         
+        Check for existing output files and handle overwrite confirmation.
         Args:
             output_dir: Directory where series_1-4.json files will be written.
             force: If True, skip confirmation and return True.
@@ -313,7 +318,6 @@ class Main():
                     shutil.copyfileobj(source, tmp)
                     
                 return Path(tmp.name)
-
     @staticmethod
     def main():
         """
@@ -332,8 +336,6 @@ class Main():
             csv_path, result = command.execute()
 
             if result:
-                Main._validate_paths(csv_path, output_dir)
-
                 if not Main.__check_existing_files(output_dir, args.force):
                     sys.exit(0)
 

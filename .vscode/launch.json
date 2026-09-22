@@ -51,7 +51,6 @@
                 "./output",
                 "--search",
                 "anscombe",
-                "Iris",
                 "-k",
                 "C:/Users/hp/Downloads/kaggle.json",
                 "data.csv"

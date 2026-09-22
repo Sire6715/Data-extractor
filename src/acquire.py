@@ -7,6 +7,7 @@ import csv
 import io
 import tempfile
 import shutil
+from abc import ABC, abstractmethod
 from src.kaggleclient import RestAccess
 from src.zipfile import ZipFile
 
@@ -25,39 +26,36 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-class Command:
+class Command(ABC):
+    
+    def __init__(self, args):
+        self.args = args
+        self.output_dir = Path(args.output)
+        
+    @abstractmethod 
     def execute(self):
-        raise NotImplementedError
+        pass
+    
+    def _extract(self, csv_path: Path):
+        return csv_path, Main._extract_series(self.args, csv_path)
 
 class LocalExtractCommand(Command):
-    def __init__(self, args):
-        self.args = args
-
     def execute(self):
         csv_path = Path(self.args.csv_file)
-        output_dir = Path(self.args.output)
-        Main._validate_paths(csv_path, output_dir)
-        return csv_path, Main._extract_series(self.args, csv_path)
+        Main._validate_paths(csv_path, self.output_dir)
+        return self._extract(csv_path)
 
 class ZipExtractCommand(Command):
-    def __init__(self, args):
-        self.args = args
-
     def execute(self):
-        output_dir = Path(self.args.output)
-        Main._validate_paths(None, output_dir)
+        Main._validate_paths(None, self.output_dir)
         csv_path = Main._handle_zip(self.args)
-        return csv_path, Main._extract_series(self.args, csv_path)
+        return self._extract(csv_path)
 
 
 class SurveyCommand(Command):
     """
     Surveys Kaggle datasets using REST API pagination.
     """
-
-    def __init__(self, args):
-        self.args = args
-
     def execute(self):
         logger.info("Starting dataset survey mode...")
 
@@ -87,8 +85,11 @@ class SurveyCommand(Command):
                 ref,
                 size,
             )
-
-        logger.info("Survey complete. Total datasets: %d", total)
+        
+        if total == 0:
+            logger.info(f"Survey Complete, {self.args.search} dataset does not exist")
+        else: 
+            logger.info("Survey complete. Total datasets: %d", total)
 
         return None, None
 
